@@ -1,64 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>${groupId}</groupId>
-		<artifactId>${rootArtifactId}</artifactId>
-		<version>${version}</version>
-	</parent>
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>${groupId}</groupId>
+        <artifactId>${rootArtifactId}</artifactId>
+        <version>${version}</version>
+    </parent>
 
-	<artifactId>${artifactId}-ios</artifactId>
-	<packaging>dll</packaging>
-	<name>${JavaGameClassName} iOS</name>
+    <artifactId>${artifactId}-ios</artifactId>
+    <packaging>jar</packaging>
+    <name>${JavaGameClassName} iOS</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>${groupId}</groupId>
-			<artifactId>${rootArtifactId}-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>${groupId}</groupId>
+            <artifactId>${rootArtifactId}-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-		<!-- requires robovm upgrades -->
-		<dependency>
-			<groupId>com.badlogic.gdx</groupId>
-			<artifactId>gdx-backend-ios</artifactId>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx-backend-robovm</artifactId>
+            <version>${gdx.version}</version>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<!-- use bin as that's where MonoDevelop puts its build bits -->
-		<directory>bin</directory>
-		<!-- omit the version from the dll name so it doesn't change with releases -->
-		<finalName>${project.artifactId}</finalName>
-		<plugins>
-			<plugin>
-				<groupId>com.samskivert</groupId>
-				<artifactId>ikvm-maven-plugin</artifactId>
-				<version>1.1.5</version>
-				<!-- this lets Maven know that we define 'packaging: dll' -->
-				<extensions>true</extensions>
-				<configuration>
-					<ikvmArgs>
-						<ikvmArg>-debug</ikvmArg>
-					</ikvmArgs>
-					<createStub>true</createStub>
-					<dlls>
-						<dll>OpenTK.dll</dll>
-						<dll>monotouch.dll</dll>
-						<dll>System.Data.dll</dll>
-						<dll>Mono.Data.Sqlite.dll</dll>
-					</dlls>
-					<copyDlls>
-						<copyDll>bin/IKVM.Runtime.dll</copyDll>
-						<copyDll>bin/IKVM.Runtime.JNI.dll</copyDll>
-						<copyDll>bin/IKVM.OpenJDK.Core.dll</copyDll>
-						<copyDll>bin/IKVM.OpenJDK.Util.dll</copyDll>
-						<copyDll>bin/IKVM.OpenJDK.Text.dll</copyDll>
-					</copyDlls>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <properties>
+	<ios.target>iphone-sim</ios.target>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.badlogicgames.gdx</groupId>
+                                    <artifactId>gdx-platform</artifactId>
+                                    <version>${gdx.version}</version>
+                                    <classifier>natives-ios</classifier>
+                                    <type>jar</type>
+                                </artifactItem>
+#if ( $freetype == "true")
+                                <artifactItem>
+                                    <groupId>com.badlogicgames.gdx</groupId>
+                                    <artifactId>gdx-freetype-platform</artifactId>
+                                    <version>${gdx.version}</version>
+                                    <classifier>natives-ios</classifier>
+                                </artifactItem>
+#end
+                            </artifactItems>
+                            <includes>**/*.a</includes>
+                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>src/main/robovm</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>robovm.*</include>
+                                    </includes>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.robovm</groupId>
+                <artifactId>robovm-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+		    <propertiesFile>${project.build.directory}/robovm.properties</propertiesFile>
+                    <configFile>${project.build.directory}/robovm.xml</configFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>deploy-on-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>${ios.target}</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

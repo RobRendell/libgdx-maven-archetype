@@ -4,15 +4,9 @@
 											xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<requiredProperties>
 		<requiredProperty key="JavaGameClassName"/>
+		<requiredProperty key="freetype"/>
 	</requiredProperties>
 	<fileSets>
-		<!-- assets "module" -->
-		<fileSet filtered="false" packaged="false" encoding="UTF-8">
-			<directory>assets</directory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
 		<!-- desktop module -->
 		<fileSet filtered="true" encoding="UTF-8">
 			<directory>desktop</directory>
@@ -76,40 +70,45 @@
 			</includes>
 		</fileSet>
 		<fileSet filtered="true" encoding="UTF-8">
-			<directory>android/res/values</directory>
+			<directory>android/src/main/resources/res/values</directory>
 			<includes>
 				<include>**/*.xml</include>
 			</includes>
 		</fileSet>
-		<fileSet encoding="UTF-8">
-			<directory>android/res/drawable-ldpi</directory>
+		<fileSet>
+			<directory>android/src/main/resources/res/drawable-ldpi</directory>
 			<includes>
 				<include>**/*.png</include>
 			</includes>
 		</fileSet>
-		<fileSet encoding="UTF-8">
-			<directory>android/res/drawable-hdpi</directory>
+		<fileSet>
+			<directory>android/src/main/resources/res/drawable-hdpi</directory>
 			<includes>
 				<include>**/*.png</include>
 			</includes>
 		</fileSet>
-		<fileSet encoding="UTF-8">
-			<directory>android/res/drawable-mdpi</directory>
+		<fileSet>
+			<directory>android/src/main/resources/res/drawable-mdpi</directory>
+			<includes>
+				<include>**/*.png</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>android/src/main/resources/res/drawable-xhdpi</directory>
+			<includes>
+				<include>**/*.png</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>android/src/main/resources/res/drawable-xxhdpi</directory>
 			<includes>
 				<include>**/*.png</include>
 			</includes>
 		</fileSet>
 		<fileSet filtered="true" encoding="UTF-8">
-			<directory>android</directory>
+			<directory>android/src/main/resources</directory>
 			<includes>
 				<include>AndroidManifest.xml</include>
-				<include>default.properties</include>
-			</includes>
-		</fileSet>
-		<fileSet encoding="UTF-8">
-			<directory>android</directory>
-			<includes>
-				<include>proguard.cfg</include>
 			</includes>
 		</fileSet>
 		<!-- ios module -->
@@ -120,16 +119,21 @@
 			</includes>
 		</fileSet>
 		<fileSet filtered="true" encoding="UTF-8">
-			<directory>ios</directory>
+			<directory>ios/src/main/robovm</directory>
 			<includes>
-				<include>Info.plist</include>
-				<include>*.cs</include>
-				<include>*.csproj</include>
-				<include>*.sln</include>
+				<include>Info.plist.xml</include>
+				<include>robovm.properties</include>
+				<include>robovm.xml</include>
 			</includes>
 		</fileSet>
-		<fileSet encoding="UTF-8">
-			<directory>ios</directory>
+		<fileSet filtered="true" packaged="true" encoding="UTF-8">
+			<directory>ios/src/main/java</directory>
+			<includes>
+				<include>**/*.java</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>ios/src/main/resources</directory>
 			<includes>
 				<include>**/*.png</include>
 			</includes>
@@ -147,6 +151,9 @@
 				</fileSet>
 				<fileSet filtered="true" packaged="true" encoding="UTF-8">
 					<directory>src/test/java</directory>
+				</fileSet>
+				<fileSet>
+					<directory>src/main/resources</directory>
 				</fileSet>
 			</fileSets>
 		</module>

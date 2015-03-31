@@ -26,7 +26,7 @@ Creating a project using the archetype is accomplished like so:
     -DarchetypeRepository=$HOME/.m2/repository \
     -DarchetypeGroupId=com.badlogic.gdx \
     -DarchetypeArtifactId=gdx-archetype \
-    -DarchetypeVersion=1.2.0
+    -DarchetypeVersion=1.4.0
 ```
 
 This will then ask you a few questions:
@@ -36,6 +36,7 @@ This will then ask you a few questions:
   * Define value for property 'version':  1.2.0: : **<default>**
   * Define value for property 'package':  com.mytest: : **<default>**
   * Define value for property 'JavaGameClassName': : **MyGame**
+  * Define value for property 'freetype': : **true**
 
 The parts in bold above are the things we typed in. You can pick whatever you want for `groupId`
 and `artifactId`, though it's customary for `groupId` to be a reverse domain name for a domain that
@@ -49,6 +50,8 @@ name of the Java class that is the entry point to your game. If you use the valu
 your main class will be `com.mytest.core.MyGame`. The archetype puts your game code into a package
 named `core` (on top of the package you specify) because of the way the HTML backend works. You can
 change it later if you want, but you'll need to do some fiddling if you use the HTML backend.
+
+`freetype` is either true or false, and determines if the gdx-freetype extension is included.
 
 Once you enter all that info, Maven will ask you to confirm your choices and then it generates your
 new skeleton game in a directory named whatever you specified for `artifactId` (in our example
@@ -65,7 +68,7 @@ You can build and run your game using the Desktop backend like this:
 
 ```
 % cd mygame
-% mvn integration-test -Pdesktop
+% mvn integration-test -Pdesktop,run
 ```
 
 This is pretty simple. It builds the Java code, and then unpacks some native libraries into the
@@ -121,8 +124,8 @@ to upload it to Google Play. You need to edit your `android/pom.xml` and change:
     <keystore.alias>game</keystore.alias>
 ```
 
-to reflect path to your keystore file and the alias of the key you will use to sign your APK. Then
-you can build a signed and zipaligned APK like so:
+to reflect the path to your keystore file and the alias of the key you will use to sign your APK.
+Then you can build a signed and zipaligned APK like so:
 
 ```
 % cd mygame
@@ -133,15 +136,29 @@ The signed and aligned APK file will be in `android/target/mygame-android-aligne
 
 ### Build and run the iOS backend
 
-This assumes you have [Xamarin.iOS] installed, as that is currently required to build your game for
-iOS.
+This assumes you have followed the [requirements] for [RoboVM], as that is currently required to
+build your game for iOS.
 
-Building the iOS backend is currently TBD. Check back later!
+You can build your game using the iOS backend and install it to a device like this:
+
+```
+% cd mygame
+% mvn install -Pios -Dios.target=ios-device
+```
+
+#### Note:
+
+The possible values for 'ios.target' are:
+- create-ipa
+- iphone-sim (default)
+- ipad-sim
+- ios-device
 
 ## Credits
 
 Much of this archetype was adapted from [PlayN's archetype].
 
 [libGDX]: http://libgdx.badlogicgames.com/
-[Xamarin.iOS]: http://www.xamarin.com/
+[RoboVM]: http://www.robovm.com/
+[requirements]: http://www.robovm.com/docs#requirements
 [PlayN's archetype]: https://github.com/threerings/playn/tree/master/archetype
